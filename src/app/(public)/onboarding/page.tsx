@@ -1,17 +1,18 @@
 "use client";
-import { useUser } from "@clerk/nextjs";
-import { useState, useEffect } from "react";
-import gqlClient from "@/services/graphql";
-import { REGISTER_USER } from "@/utils/mutations";
-import { useRouter } from "next/navigation";
-import { RegisterUserArgs } from "@/types";
-import { Heart, User, Camera, Settings } from "lucide-react";
-import { BasicInfoForm } from "@/components/profile/basic-info-form";
-import PhotoManager from "@/components/photos/photo-manager";
+import { Alert } from "@/components/alerts/alert";
 import LocationPicker from "@/components/location/location-picker";
+import PhotoManager from "@/components/photos/photo-manager";
+import { BasicInfoForm } from "@/components/profile/basic-info-form";
 import { PreferencesFormSection } from "@/components/profile/preferences-form-section";
 import { GradientButton } from "@/components/sliders/gradient-button";
-import { Alert } from "@/components/alerts/alert";
+import gqlClient from "@/services/graphql";
+import { RegisterUserArgs } from "@/types";
+import { REGISTER_USER } from "@/utils/mutations";
+import { useUser } from "@clerk/nextjs";
+import { Camera, Heart, MapPin, Settings, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 export default function OnboardingPage() {
   const { user } = useUser();
@@ -20,6 +21,8 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -39,7 +42,6 @@ export default function OnboardingPage() {
   const [email, setEmail] = useState("");
   const [locationFetched, setLocationFetched] = useState(false);
 
-  // Initialize from Clerk user
   useEffect(() => {
     if (user) {
       setForm((prev) => ({
@@ -57,7 +59,13 @@ export default function OnboardingPage() {
     }
   }, [user]);
 
-  // Update form fields
+  useEffect(() => {
+    containerRef.current?.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [currentStep]);
+
   const updateBasicInfo = <K extends "name" | "bio" | "gender" | "birthday">(
     key: K,
     value: string | typeof form.gender
@@ -77,7 +85,7 @@ export default function OnboardingPage() {
 
   const updatePreferences = <K extends keyof typeof form.preferences>(
     key: K,
-    value: typeof form.preferences[K]
+    value: (typeof form.preferences)[K]
   ) => {
     setForm((prev) => ({
       ...prev,
@@ -122,13 +130,24 @@ export default function OnboardingPage() {
       setError(null);
       await gqlClient.request(REGISTER_USER, { input });
 
-      // Check for redirect path
+      const res = await fetch("/api/onboarding/complete", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (data.success) {
+        console.log("Onboarding completion recorded successfully.");
+        toast.success("Onboarding completed successfully!");
+      } else {
+        toast.error("Failed to record onboarding completion.");
+        console.error("Error recording onboarding completion:", data.error);
+      }
+
       const redirectPath = sessionStorage.getItem("redirectAfterOnboarding");
       if (redirectPath) {
         sessionStorage.removeItem("redirectAfterOnboarding");
         router.push(redirectPath);
       } else {
-        router.push("/");
+        router.push("/discover");
       }
     } catch (err: unknown) {
       if (err instanceof Error) setError(err.message);
@@ -187,15 +206,19 @@ export default function OnboardingPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-pink-50 via-red-50 to-orange-50 dark:from-background dark:via-card/50 dark:to-background flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-2xl bg-card rounded-3xl shadow-2xl overflow-hidden border border-border/50">
-        {/* Progress Bar */}
-        <div className="bg-muted/30 h-2">
-          <div
-            className="h-full bg-gradient-to-r from-pink-500 via-red-500 to-orange-500 transition-all duration-500 ease-out"
-            style={{ width: `${(currentStep / 3) * 100}%` }}
-          />
-        </div>
-
+      <div
+        ref={containerRef}
+        className="
+    w-full max-w-2xl
+    bg-card
+    rounded-3xl
+    shadow-2xl
+    border border-border/50
+    max-h-[85vh]
+    overflow-y-auto
+    scrollbar-hide
+  "
+      >
         <div className="p-8">
           {/* Header */}
           <div className="text-center mb-8">
@@ -264,16 +287,9 @@ export default function OnboardingPage() {
             {/* Step 2: Photos & Location */}
             {currentStep === 2 && (
               <div className="space-y-8">
-                <PhotoManager
-                  photos={form.photos}
-                  onChange={updatePhotos}
-                  maxPhotos={6}
-                  saving={loading}
-                />
-
                 <div>
                   <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <Camera className="w-5 h-5 text-pink-500" />
+                    <MapPin className="w-5 h-5 text-pink-500" />
                     Your Location
                   </h3>
                   <LocationPicker
@@ -282,14 +298,28 @@ export default function OnboardingPage() {
                     onLocationFetch={() => setLocationFetched(true)}
                     saving={loading}
                   />
-                  {locationFetched && form.location.lat !== 0 && (
-                    <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
-                      <p className="text-green-800 dark:text-green-400 text-sm font-medium">
-                        ✓ Location saved
-                      </p>
-                    </div>
-                  )}
+                  {/* Reserve space to prevent layout jump */}
+                  <div className="min-h-[56px]">
+                    {locationFetched && form.location.lat !== 0 ? (
+                      <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-xl">
+                        <p className="text-green-800 dark:text-green-400 text-sm font-medium">
+                          ✓ Location saved
+                        </p>
+                      </div>
+                    ) : (
+                      // invisible placeholder same height
+                      <div className="mt-4 p-3 rounded-xl opacity-0 select-none">
+                        placeholder
+                      </div>
+                    )}
+                  </div>
                 </div>
+                <PhotoManager
+                  photos={form.photos}
+                  onChange={updatePhotos}
+                  maxPhotos={6}
+                  saving={loading}
+                />
               </div>
             )}
 

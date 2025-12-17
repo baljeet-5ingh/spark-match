@@ -84,6 +84,10 @@ export const GET_PREFERRED_USERS = gql`
       photos
       bio
       isOnline
+      location {
+        lat
+        lng
+      }
     }
   }
 `;

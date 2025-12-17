@@ -6,17 +6,27 @@ export function TinderSearchLoader() {
       {/* Ripple Radar */}
       <div className="relative w-28 h-28">
         {/* Outer ripple */}
-        <span className="absolute inset-0 rounded-full bg-gradient-to-r from-rose-500/40 via-orange-500/40 to-rose-500/40 animate-radar opacity-70"></span>
+        <span className="absolute inset-0 rounded-full 
+          bg-gradient-to-r from-rose-500/40 via-orange-500/40 to-rose-500/40
+          animate-ping opacity-70"
+        />
 
         {/* Middle ripple */}
-        <span className="absolute inset-3 rounded-full bg-gradient-to-r from-rose-500/30 via-orange-500/30 to-rose-500/30 animate-radar-slow opacity-60"></span>
+        <span className="absolute inset-3 rounded-full 
+          bg-gradient-to-r from-rose-500/30 via-orange-500/30 to-rose-500/30
+          animate-ping opacity-60 [animation-delay:300ms]"
+        />
 
         {/* Inner pulse */}
-        <span className="absolute inset-8 rounded-full bg-gradient-to-r from-rose-500 to-orange-500 shadow-[0_0_20px_rgba(255,99,99,0.6)] animate-inner-pulse"></span>
+        <span className="absolute inset-8 rounded-full 
+          bg-gradient-to-r from-rose-500 to-orange-500
+          shadow-[0_0_20px_rgba(255,99,99,0.6)]
+          animate-pulse"
+        />
       </div>
 
       {/* Text */}
-      <p className="text-lg font-medium text-muted-foreground animate-subtle-bounce tracking-wide">
+      <p className="text-lg font-medium text-muted-foreground animate-bounce tracking-wide">
         Finding people near you…
       </p>
     </div>

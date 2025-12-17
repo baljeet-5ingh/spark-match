@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { LightBulbIcon } from "@heroicons/react/24/solid";
 import { Heart, Lightbulb, MapPin, Settings, User, Zap } from "lucide-react";
 import Link from "next/link";
+import { StartDiscovering } from "../buttons/start-discovering.tsx-button";
 
 export default function HeroSection() {
   const features = [
@@ -39,7 +40,7 @@ export default function HeroSection() {
 
   return (
     <main className="relative flex flex-col items-center justify-center min-h-[calc(100vh-64px)] px-6 text-center text-foreground overflow-hidden py-5">
-      <h1 className="text-4xl sm:text-6xl font-bold mb-4 text-foreground mt-16">
+      <h1 className="text-4xl sm:text-6xl font-bold mb-4 text-foreground mt-8">
         SparkMatch
       </h1>
 
@@ -47,21 +48,7 @@ export default function HeroSection() {
         Your Perfect destination to find connections, swipe, and match.
       </p>
 
-      <Link
-        href="/discover"
-        className="
-    relative inline-flex items-center justify-center
-    px-8 py-2 mb-8 rounded-full font-semibold text-white text-lg sm:text-xl
-    bg-gradient-to-r from-pink-500 via-red-500 to-orange-500
-    hover:scale-105 active:scale-95 transition-all duration-300
-    shadow-lg shadow-pink-500/30
-    moving-border
-  "
-      >
-        Start Discovering
-      </Link>
-
-      {/* ⭐ BIG CTA BUTTON */}
+      <StartDiscovering />
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl w-full">
         {features.map((feature, idx) => (

@@ -80,7 +80,6 @@ export default function ProfilePage() {
               <div className="flex-shrink-0 mx-auto md:mx-0">
                 <ProfileAvatar
                   profile={profile}
-                  onProfileUpdate={setProfile}
                 />
               </div>
 
@@ -88,7 +87,7 @@ export default function ProfilePage() {
               <div className="flex-grow space-y-8 w-full">
                 {/* Header & Stats */}
                 <div>
-                   <ProfileHeader profile={profile} />
+                   <ProfileHeader profile={profile} onProfileUpdate={setProfile} />
                    <div className="mt-6 flex flex-wrap gap-4">
                       {/* <ProfileStats profile={profile} /> */}
                    </div>

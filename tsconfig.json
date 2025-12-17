@@ -28,6 +28,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "prisma/seed.js"
-, "prisma.config.js"  ],
+, "prisma.config.js", "src/components/buttons/start-discovering.tsx-button.tsx"  ],
   "exclude": ["node_modules"]
 }

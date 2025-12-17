@@ -91,9 +91,28 @@ export const TinderCard: React.FC<TinderCardProps> = ({
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
         />
 
-        {/* Gradient Overlay */}
-<div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/40 to-black/80" />
+        {/* Subtle highlight */}
+        <div
+          className="
+    absolute inset-0
+    bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.15),transparent_60%)]
+    dark:bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.05),transparent_60%)]
+  "
+        />
 
+        {/* Readability gradient (THIS WAS MISSING) */}
+        <div
+          className="
+    absolute inset-0
+    bg-gradient-to-b
+    from-black/0
+    via-black/30
+    to-black/75
+    dark:from-black/10
+    dark:via-black/45
+    dark:to-black/85
+  "
+        />
 
         {/* Online Indicator */}
         {user.isOnline && (

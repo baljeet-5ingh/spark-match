@@ -11,6 +11,7 @@ import {
   UserPreferencesMeta,
   UserProfile,
 } from "@/types";
+import { getDistanceKm } from "@/utils/calculate-distance";
 import { handleSwipeHelper } from "@/utils/handleSwipe";
 import { REWIND_USER } from "@/utils/mutations";
 import { GET_CURRENT_USER, GET_PREFERRED_USERS } from "@/utils/queries";
@@ -37,11 +38,14 @@ export default function DiscoverPage() {
 
   const [distanceKm, setDistanceKm] = useState(50);
   const [onlyOnline, setOnlyOnline] = useState(false);
+  const [maxEmptyDistance, setMaxEmptyDistance] = useState<number | null>(null);
 
   const [storedPrefs, setStoredPrefs] = useState<UserPreferencesMeta | null>(
     null
   );
   const [isDistanceChanged, setIsDistanceChanged] = useState(false);
+  const prevDistanceRef = useRef<number>(distanceKm);
+
   const liveCoords = useSessionLocation() as LiveLocation | null;
 
   const isRewinding = useRef(false);
@@ -72,45 +76,83 @@ export default function DiscoverPage() {
     load();
   }, [clerkUser]);
 
-  const fetchUsers = useCallback(
-    async (forceRefetch = false, overrides?: { distanceKm?: number }) => {
-      if (!currentUser) return;
+const fetchUsers = useCallback(
+  async (force = false) => {
+    if (!currentUser) return;
 
-      setLoading(true);
+    if (
+      !force &&
+      isDistanceChanged &&
+      distanceKm < prevDistanceRef.current &&
+      liveCoords
+    ) {
+      setUsers((prev) => {
+        const filtered = prev.filter((u) => {
+          console.log("Filtering user:", u.id);
+          if (!u.location) return false;
+          const calcDistance = getDistanceKm(liveCoords, u.location);
+          return calcDistance <= distanceKm;
+        });
 
-      const effectiveDistance = overrides?.distanceKm ?? distanceKm;
+        return onlyOnline ? filtered.filter(u => u.isOnline) : filtered;
+      });
 
-      try {
-        const coords = liveCoords
-          ? { lat: liveCoords.lat, lng: liveCoords.lng }
-          : undefined;
+      prevDistanceRef.current = distanceKm; 
+      setIsDistanceChanged(false);
+      return;
+    }
 
-        const res = (await gqlClient.request(GET_PREFERRED_USERS, {
-          clerkId: currentUser.clerkId,
-          limit: 12,
-          cursor: forceRefetch ? null : cursor,
-          distanceKm: effectiveDistance,
-          currentLocation: coords,
-        })) as { getPreferredUsers: UserProfile[] };
+    setLoading(true);
 
-        setOriginalUsers(res.getPreferredUsers);
-        setCursor(
-          res.getPreferredUsers.length > 0
-            ? res.getPreferredUsers[res.getPreferredUsers.length - 1].id
-            : null
-        );
-      } catch (err) {
-        console.error("Fetch users failed:", err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [currentUser, cursor, liveCoords, distanceKm]
-  );
+    try {
+      const coords = liveCoords
+        ? { lat: liveCoords.lat, lng: liveCoords.lng }
+        : undefined;
+
+      const res = (await gqlClient.request(GET_PREFERRED_USERS, {
+        clerkId: currentUser.clerkId,
+        limit: 12,
+        distanceKm,
+        currentLocation: coords,
+      })) as { getPreferredUsers: UserProfile[] };
+
+      setOriginalUsers(res.getPreferredUsers);
+      setUsers(
+        onlyOnline
+          ? res.getPreferredUsers.filter(u => u.isOnline)
+          : res.getPreferredUsers
+      );
+
+      prevDistanceRef.current = distanceKm;
+    } catch (err) {
+      console.error("Fetch users failed:", err);
+    } finally {
+      setLoading(false);
+      setIsDistanceChanged(false);
+    }
+  },
+  [
+    currentUser,
+    distanceKm,
+    isDistanceChanged,
+    onlyOnline,
+    liveCoords,
+  ]
+);
+
+
 
   useEffect(() => {
     if (currentUser) fetchUsers(true);
   }, [currentUser]);
+
+  useEffect(() => {
+    if (liveCoords) {
+      setMaxEmptyDistance(null);
+      setCursor(null);
+      fetchUsers(true);
+    }
+  }, [liveCoords]);
 
   const filteredUsers = useMemo(() => {
     if (!onlyOnline) return originalUsers;
@@ -191,14 +233,14 @@ export default function DiscoverPage() {
     }
   };
 
-  const applyFilters = async () => {
-    setCursor(null);
-    setShowFilters(false);
+const applyFilters = async () => {
+  setShowFilters(false);
 
-    // if (!isDistanceChanged) return;
+  if (!isDistanceChanged) return;
 
-    await fetchUsers(true);
-  };
+  await fetchUsers();
+};
+
 
   const resetFilters = async () => {
     if (!storedPrefs) return;
@@ -220,7 +262,6 @@ export default function DiscoverPage() {
   return (
     <main
       className="relative w-full min-h-[calc(100vh-125px)] md:min-h-[calc(100vh-64px)]
-                     bg-gradient-to-br from-background via-background to-primary/5
                      flex flex-col items-center overflow-hidden"
     >
       <FiltersPanel
@@ -238,7 +279,7 @@ export default function DiscoverPage() {
 
       <div className="flex-1 w-full flex flex-col justify-center items-center relative py-6 -mt-4">
         {loading ? (
-          <TinderSearchLoader />
+        <TinderSearchLoader />
         ) : users.length === 0 ? (
           <div className="text-center space-y-4 max-w-md px-6">
             <h3 className="text-2xl font-bold">No one new around you</h3>
@@ -248,7 +289,7 @@ export default function DiscoverPage() {
                 : "Try adjusting your preferences to see more people."}
             </p>
             <div
-              onClick={applyFilters}
+              onClick={() => fetchUsers(true)}
               className="cursor-pointer flex items-center justify-center gap-2"
             >
               <RotateCcw className="h-5 w-5" />

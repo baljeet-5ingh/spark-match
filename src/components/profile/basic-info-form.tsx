@@ -1,6 +1,7 @@
 "use client";
-import { SectionHeader } from "../cards/card";
 import { User } from "lucide-react";
+import { SectionHeader } from "../cards/card";
+import { useState } from "react";
 
 export interface BasicInfoProps {
   name: string;
@@ -26,6 +27,11 @@ export function BasicInfoForm({
   const maxBirthday = new Date();
   maxBirthday.setFullYear(maxBirthday.getFullYear() - 18);
   const maxDate = maxBirthday.toISOString().split("T")[0];
+
+  const minBirthday = new Date();
+  minBirthday.setFullYear(minBirthday.getFullYear() - 80);
+  const minDate = minBirthday.toISOString().split("T")[0];
+  const [birthdayError, setBirthdayError] = useState<string | null>(null);
   return (
     <div className="space-y-6">
       <SectionHeader
@@ -35,7 +41,6 @@ export function BasicInfoForm({
       />
 
       <div className="space-y-4">
-        {/* Full Name */}
         <div>
           <label className="block text-sm font-semibold text-foreground mb-3">
             Full Name
@@ -51,7 +56,6 @@ export function BasicInfoForm({
           />
         </div>
 
-        {/* About You */}
         <div>
           <label className="block text-sm font-semibold text-foreground mb-3">
             About You
@@ -71,7 +75,6 @@ export function BasicInfoForm({
           </p>
         </div>
 
-        {/* Gender buttons – same styling as before */}
         <div>
           <label className="block text-sm font-semibold text-foreground mb-3">
             Gender
@@ -94,7 +97,6 @@ export function BasicInfoForm({
           </div>
         </div>
 
-        {/* Birthday */}
         <div>
           <label className="block text-sm font-semibold text-foreground mb-3">
             Birthday
@@ -103,14 +105,37 @@ export function BasicInfoForm({
           <input
             type="date"
             value={birthday}
-            onChange={(e) => onChange("birthday", e.target.value)}
             disabled={saving}
-            max={maxDate} // ⛔ User cannot pick a future date or anything < 18 years old
+            max={maxDate}
+            min={minDate}
+            onChange={(e) => {
+              const typed = e.target.value;
+
+              if (!typed) {
+                setBirthdayError(null);
+                return;
+              }
+
+              const typedDate = new Date(typed);
+              const maxAllowedDate = new Date(maxDate);
+              if (typedDate > maxAllowedDate) {
+                setBirthdayError("Did your parents even know you are here?");
+                return;
+              }
+              if (typedDate < new Date(minDate)) {
+                setBirthdayError("Are you sure you are that old?");
+                return;
+              }
+              setBirthdayError(null);
+              onChange("birthday", typed);
+            }}
             className="w-full bg-background border border-border rounded-xl px-4 py-3 
-                     focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 
-                     transition-all duration-200 text-foreground"
-            required
+             focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 
+             transition-all duration-200 text-foreground"
           />
+          {birthdayError && (
+            <p className="text-xs text-red-500 mt-2">{birthdayError}</p>
+          )}
         </div>
       </div>
     </div>

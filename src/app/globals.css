@@ -1,8 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* ----------------------- */
+/* DARK MODE VARIANT SETUP */
+/* ----------------------- */
 @custom-variant dark (&:is(.dark *));
 
+/* ----------------------- */
+/* THEME VARIABLES */
+/* ----------------------- */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -41,8 +47,40 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-}
+  --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
+  --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+  @keyframes shimmer-slide {
+  to {
+    transform: translate(calc(100cqw - 100%), 0);
+    }
+  }
+  @keyframes spin-around {
+  0% {
+    transform: translateZ(0) rotate(0);
+    }
+  15%, 35% {
+    transform: translateZ(0) rotate(90deg);
+    }
+  65%, 85% {
+    transform: translateZ(0) rotate(270deg);
+    }
+  100% {
+    transform: translateZ(0) rotate(360deg);
+    }
+  }
+  --animate-shine: shine var(--duration) infinite linear
+;
+  @keyframes shine {
+  0% {
+    background-position: 0% 0%;}
+  50% {
+    background-position: 100% 100%;}
+  to {
+    background-position: 0% 0%;}}}
 
+/* ----------------------- */
+/* ROOT COLORS */
+/* ----------------------- */
 :root {
   --radius: 0.65rem;
   --background: oklch(1 0 0);
@@ -63,22 +101,12 @@
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
   --ring: oklch(0.645 0.246 16.439);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.645 0.246 16.439);
-  --sidebar-primary-foreground: oklch(0.969 0.015 12.422);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.645 0.246 16.439);
   --primary-rgb: 235, 119, 89;
 }
 
+/* ----------------------- */
+/* DARK THEME */
+/* ----------------------- */
 .dark {
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
@@ -98,21 +126,11 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.645 0.246 16.439);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.645 0.246 16.439);
-  --sidebar-primary-foreground: oklch(0.969 0.015 12.422);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.645 0.246 16.439);
 }
 
+/* ----------------------- */
+/* BASE STYLES */
+/* ----------------------- */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -126,6 +144,9 @@
   }
 }
 
+/* ----------------------- */
+/* ANIMATIONS */
+/* ----------------------- */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -141,7 +162,6 @@
   animation: fade-in 0.4s ease-in-out;
 }
 
-/* Smooth slide-in from left */
 @keyframes slide-in-left {
   from {
     opacity: 0;
@@ -157,7 +177,6 @@
   animation: slide-in-left 0.5s ease-out;
 }
 
-/* Smooth slide-in from right */
 @keyframes slide-in-right {
   from {
     opacity: 0;
@@ -173,7 +192,6 @@
   animation: slide-in-right 0.5s ease-out;
 }
 
-/* Scale-in animation */
 @keyframes scale-in {
   from {
     opacity: 0;
@@ -189,11 +207,12 @@
   animation: scale-in 0.3s ease-out;
 }
 
-/* Glassmorphism utility */
+/* ----------------------- */
+/* GLASS EFFECT */
+/* ----------------------- */
 .glass {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -202,180 +221,125 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Hide scrollbar but keep functionality */
+/* ----------------------- */
+/* SCROLLBAR UTILITIES */
+/* ----------------------- */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
 
-/* Custom styled scrollbar */
 .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--primary) / 0.3) transparent;
 }
-
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;
-  height: 6px;
 }
 
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--primary) / 0.3);
-  border-radius: 20px;
-  transition: background-color 0.2s;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background-color: hsl(var(--primary) / 0.5);
-}
-
+/* ----------------------- */
+/* SLIDER THUMB */
+/* ----------------------- */
+/* ----------------------- */
+/* SLIDER THUMB */
+/* ----------------------- */
 .slider-thumb::-webkit-slider-thumb {
   appearance: none;
-  pointer-events: auto; /* 💥 The magic fix */
+  pointer-events: auto;
   height: 24px;
   width: 24px;
   border-radius: 50%;
   background: linear-gradient(135deg, #ec4899, #ef4444, #f97316);
-  cursor: pointer;
   border: 3px solid white;
   box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+  cursor: pointer;
+  transition: transform 0.15s ease;
 }
 
-@keyframes fade {
-  from {
-    opacity: 0.3;
-  }
-  to {
-    opacity: 1;
-  }
+.slider-thumb::-moz-range-thumb {
+  appearance: none;
+  pointer-events: auto;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ec4899, #ef4444, #f97316);
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+  cursor: pointer;
+  transition: transform 0.15s ease;
 }
 
-.animate-fade {
-  animation: fade 0.6s ease-in-out infinite alternate;
+/* Active state for both thumbs */
+.slider-thumb:active::-webkit-slider-thumb {
+  transform: scale(1.1);
 }
 
-/* Moving gradient border — Rose Shade Version */
-.moving-border::before {
+.slider-thumb:active::-moz-range-thumb {
+  transform: scale(1.1);
+}
+
+/* Dark mode adjustments */
+.dark .slider-thumb::-webkit-slider-thumb {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.5);
+}
+
+.dark .slider-thumb::-moz-range-thumb {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.5);
+}
+/* ----------------------- */
+/* MAGICUI SHIMMER BORDER */
+/* ----------------------- */
+
+/* ----------------------- */
+/* TRUE SHIMMER BORDER — MagicUI-accurate */
+/* ----------------------- */
+
+.shimmer-border {
+  position: relative;
+  overflow: visible;    /* important so shimmer stays outside */
+  border-radius: 9999px;
+  border: none; 
+}
+
+.shimmer-border::after {
   content: "";
   position: absolute;
-  inset: -2px; /* Border thickness */
-  border-radius: inherit;
-  padding: 2px;
+  top: 50%;
+  left: 50%;
 
-  /* ✨ Soft rose gradient */
-  background: linear-gradient(
-    90deg,
-    #ff7094,
-    /* light rose */ #f5466c,
-    /* rose-400 */ #ff426b,
-    /* rose-500 */ #fc2255,
-    #fe4040
-  );
+  /* size of the sparkle */
+  width: 55px;
+  height: 8px;
+  border-radius: 9999px;
+  border: none;
+background: linear-gradient(
+  90deg,
+  rgba(236, 72, 153, 1) 0%,      /* pink-500 transparent */
+  rgba(239, 68, 68, 1) 50%,      /* red-500 full */
+  rgba(249, 115, 22, 1) 100%     /* orange-500 transparent */
+);
 
-  background-size: 300% 300%;
-  animation: moving-border-animation 3s linear infinite;
+  filter: blur(2px);
+  opacity: 0.9;
 
-  /* Mask the inside so only border shows */
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
+  /* Position on border ring */
+  transform-origin: 0 0;
+  animation: shimmer-border-rotate var(--shimmer-speed, 2.4s) linear infinite;
 
-  pointer-events: none;
+  /* place streak *just outside* the button border */
+  transform: rotate(0deg) translate(calc(var(--shimmer-radius, 140%) ), -50%);
 }
 
-@keyframes moving-border-animation {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 200% 50%;
-  }
-}
-
-.smooth-scale {
-  transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
-  will-change: transform;
-}
-
-/* Tinder Radar Ripple — Fast */
-@keyframes radar {
-  0% {
-    transform: scale(0.7);
-    opacity: 0.75;
-  }
-  70% {
-    transform: scale(1.35);
-    opacity: 0.15;
-  }
-  100% {
-    transform: scale(1.6);
-    opacity: 0;
+/* Rotation animation */
+@keyframes shimmer-border-rotate {
+  to {
+    transform: rotate(360deg)
+      translate(calc(var(--shimmer-radius, 140%)), -50%);
   }
 }
 
-.animate-radar {
-  animation: radar 1.8s ease-out infinite;
-}
-
-/* Slower outer ripple */
-@keyframes radar-slow {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.6;
-  }
-  70% {
-    transform: scale(1.5);
-    opacity: 0.12;
-  }
-  100% {
-    transform: scale(1.7);
-    opacity: 0;
-  }
-}
-
-.animate-radar-slow {
-  animation: radar-slow 2.8s ease-out infinite;
-}
-
-/* Inner pulse */
-@keyframes inner-pulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.85;
-  }
-  50% {
-    transform: scale(1.08);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.85;
-  }
-}
-
-.animate-inner-pulse {
-  animation: inner-pulse 1.6s ease-in-out infinite;
-}
-
-/* Subtle text bounce */
-@keyframes subtle-bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(3px);
-  }
-}
-
-.animate-subtle-bounce {
-  animation: subtle-bounce 1.8s ease-in-out infinite;
-}

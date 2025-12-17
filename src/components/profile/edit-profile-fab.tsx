@@ -1,4 +1,3 @@
-// components/profile/EditProfileFab.tsx
 "use client";
 
 import { useState } from "react";
@@ -30,22 +29,20 @@ export default function EditProfileFab({
         <button
           type="button"
           className={`
-    h-12 w-12 sm:h-14 sm:w-14
-    rounded-full
-    bg-white dark:bg-neutral-900
-    flex items-center justify-center
-    shadow-[0_4px_20px_rgba(0,0,0,0.25)]
-    dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)]
-    border border-black/5 dark:border-white/10
-    hover:shadow-[0_6px_28px_rgba(0,0,0,0.35)]
-    dark:hover:shadow-[0_6px_28px_rgba(255,255,255,0.2)]
-    hover:scale-110 active:scale-95
-    transition-all duration-300
-    backdrop-blur-md
-    ${className}
-  `}
+            flex items-center gap-2
+            px-3 py-1.5
+            rounded-lg
+            text-sm font-medium
+            bg-muted/40 dark:bg-neutral-800/60
+            border border-border/60
+            text-foreground
+            shadow-sm
+            transition-all duration-200
+            ${className}
+          `}
         >
-          <Pencil className="h-5 w-5 text-black dark:text-white" />
+          <Pencil className="h-4 w-4" />
+          <span>Edit</span>
         </button>
       </DialogTrigger>
 
