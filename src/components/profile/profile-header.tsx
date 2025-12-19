@@ -34,9 +34,10 @@ export default function ProfileHeader({
 
       {/* ✨ EDIT FAB — SAME BEHAVIOR AS BEFORE */}
       {!readonly && onProfileUpdate && (
-        <div className="absolute top-0 right-0 z-30">
-          <EditProfileFab profile={profile} onProfileUpdate={onProfileUpdate} />
-        </div>
+<div className="hidden sm:block absolute top-0 right-0 z-30">
+  <EditProfileFab profile={profile} onProfileUpdate={onProfileUpdate} />
+</div>
+
       )}
 
       {/* BIO */}

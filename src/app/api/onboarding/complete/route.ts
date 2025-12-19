@@ -1,3 +1,4 @@
+// app/api/onboarding/complete/route.ts
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -11,15 +12,18 @@ export async function POST() {
 
     const client = await clerkClient();
 
+    // Update user metadata
     await client.users.updateUser(userId, {
       publicMetadata: {
         onboarded: true,
       },
     });
 
+    console.log(`✅ User ${userId} marked as onboarded`);
+
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Onboarding completion error:", error);
+    console.error("❌ Onboarding completion error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

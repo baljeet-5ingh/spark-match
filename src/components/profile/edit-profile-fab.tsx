@@ -31,7 +31,7 @@ export default function EditProfileFab({
           className={`
             flex items-center gap-2
             px-3 py-1.5
-            rounded-lg
+            rounded-full
             text-sm font-medium
             bg-muted/40 dark:bg-neutral-800/60
             border border-border/60
@@ -42,7 +42,7 @@ export default function EditProfileFab({
           `}
         >
           <Pencil className="h-4 w-4" />
-          <span>Edit</span>
+          <span className="hidden sm:block">Edit</span>
         </button>
       </DialogTrigger>
 

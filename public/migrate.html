@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Migrate All Users</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            margin-top: 0;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Migrate All Users</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Important:</strong> This will mark ALL Clerk users as onboarded. Use this if you have existing users who should skip onboarding.
+        </div>
+
+        <label for="secretKey"><strong>Migration Secret:</strong></label>
+        <input 
+            type="password" 
+            id="secretKey" 
+            placeholder="Enter your MIGRATION_SECRET"
+            value="my-super-secret-migration-key-xyz123abc456"
+        />
+
+        <button onclick="runMigration()" id="migrateBtn">
+            🚀 Migrate All Users
+        </button>
+
+        <div id="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function runMigration() {
+            const button = document.getElementById('migrateBtn');
+            const resultDiv = document.getElementById('result');
+            const secretKey = document.getElementById('secretKey').value;
+
+            if (!secretKey) {
+                alert('Please enter the migration secret key');
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = '⏳ Running migration...';
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Starting migration...';
+            
+            try {
+                const response = await fetch('/api/migrate-all-users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ secret: secretKey })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.textContent = `✅ Migration Complete!\n\n` +
+                        `Total Users: ${data.total}\n` +
+                        `Newly Migrated: ${data.migrated}\n` +
+                        `Already Onboarded: ${data.alreadyOnboarded}\n` +
+                        `Errors: ${data.errors}`;
+                    resultDiv.style.background = '#d4edda';
+                    resultDiv.style.color = '#155724';
+                } else {
+                    resultDiv.textContent = `❌ Error: ${data.error}`;
+                    resultDiv.style.background = '#f8d7da';
+                    resultDiv.style.color = '#721c24';
+                }
+            } catch (error) {
+                resultDiv.textContent = `❌ Error: ${error.message}`;
+                resultDiv.style.background = '#f8d7da';
+                resultDiv.style.color = '#721c24';
+            } finally {
+                button.disabled = false;
+                button.textContent = '🚀 Migrate All Users';
+            }
+        }
+    </script>
+</body>
+</html>

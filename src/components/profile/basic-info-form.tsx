@@ -1,7 +1,6 @@
 "use client";
 import { User } from "lucide-react";
 import { SectionHeader } from "../cards/card";
-import { useState } from "react";
 
 export interface BasicInfoProps {
   name: string;
@@ -31,7 +30,7 @@ export function BasicInfoForm({
   const minBirthday = new Date();
   minBirthday.setFullYear(minBirthday.getFullYear() - 80);
   const minDate = minBirthday.toISOString().split("T")[0];
-  const [birthdayError, setBirthdayError] = useState<string | null>(null);
+
   return (
     <div className="space-y-6">
       <SectionHeader
@@ -108,34 +107,11 @@ export function BasicInfoForm({
             disabled={saving}
             max={maxDate}
             min={minDate}
-            onChange={(e) => {
-              const typed = e.target.value;
-
-              if (!typed) {
-                setBirthdayError(null);
-                return;
-              }
-
-              const typedDate = new Date(typed);
-              const maxAllowedDate = new Date(maxDate);
-              if (typedDate > maxAllowedDate) {
-                setBirthdayError("Did your parents even know you are here?");
-                return;
-              }
-              if (typedDate < new Date(minDate)) {
-                setBirthdayError("Are you sure you are that old?");
-                return;
-              }
-              setBirthdayError(null);
-              onChange("birthday", typed);
-            }}
+            onChange={(e) => onChange("birthday", e.target.value)}
             className="w-full bg-background border border-border rounded-xl px-4 py-3 
              focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 
              transition-all duration-200 text-foreground"
           />
-          {birthdayError && (
-            <p className="text-xs text-red-500 mt-2">{birthdayError}</p>
-          )}
         </div>
       </div>
     </div>

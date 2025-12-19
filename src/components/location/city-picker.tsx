@@ -18,6 +18,7 @@ export function CityPicker({
     const timeout = setTimeout(async () => {
       if (query.length < 2) {
         setSuggestions([]);
+        setLoading(false);
         return;
       }
 
@@ -32,7 +33,10 @@ export function CityPicker({
 
   const handleSelect = (city: CitySuggestion) => {
     setIsSelected(true);
-    const display = `${city.name}${city.state ? `, ${city.state}` : ""}, ${city.country}`;
+
+    const display = `${city.name}${
+      city.state ? `, ${city.state}` : ""
+    }, ${city.country}`;
 
     onSelect({
       lat: city.lat,
@@ -44,8 +48,10 @@ export function CityPicker({
     setSuggestions([]);
   };
 
+  const showDropdown = !isSelected && (loading || suggestions.length > 0);
+
   return (
-    <div className="relative space-y-2">
+    <div className="relative">
       <input
         value={query}
         onChange={(e) => {
@@ -53,25 +59,42 @@ export function CityPicker({
           setQuery(e.target.value);
         }}
         placeholder="Search city..."
-        className="w-full bg-background border border-border rounded-xl px-4 py-3 focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition text-foreground"
+        className="
+          w-full bg-background border border-border rounded-xl
+          px-4 py-3 text-foreground
+          focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500
+          transition
+        "
       />
 
-      {!isSelected && loading && (
-        <p className="text-xs text-muted-foreground">Searching...</p>
-      )}
-
-      {!isSelected && suggestions.length > 0 && (
-        <div className="absolute z-50 bg-card border border-border rounded-xl w-full shadow-lg max-h-48 overflow-auto">
-          {suggestions.map((city, idx) => (
-            <button
-              key={idx}
-              className="w-full text-left px-4 py-2 hover:bg-muted/30 cursor-pointer text-sm transition"
-              onClick={() => handleSelect(city)}
-            >
-              {city.name}
-              {city.state ? `, ${city.state}` : ""} ({city.country})
-            </button>
-          ))}
+      {showDropdown && (
+        <div
+          className="
+            absolute top-full left-0 mt-2 z-50
+            w-full rounded-xl border border-border
+            bg-card shadow-lg
+            max-h-48 overflow-auto
+          "
+        >
+          {loading ? (
+            <div className="px-4 py-3 text-sm text-muted-foreground">
+              Searching…
+            </div>
+          ) : (
+            suggestions.map((city, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleSelect(city)}
+                className="
+                  w-full text-left px-4 py-2 text-sm
+                  hover:bg-muted/30 transition
+                "
+              >
+                {city.name}
+                {city.state ? `, ${city.state}` : ""} ({city.country})
+              </button>
+            ))
+          )}
         </div>
       )}
     </div>

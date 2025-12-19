@@ -13,6 +13,7 @@ import { GradientButton } from "@/components/sliders/gradient-button";
 import ProfileAvatar from "@/components/profile/profile-avatar";
 import ProfileHeader from "@/components/profile/profile-header";
 import ProfilePreferences from "@/components/profile/profile-preferences";
+import EditProfileFab from "@/components/profile/edit-profile-fab";
 
 export default function ProfilePage() {
   const { user } = useUser();
@@ -76,27 +77,21 @@ export default function ProfilePage() {
           
           <div className="p-6 sm:p-10">
             <div className="flex flex-col md:flex-row gap-8 items-start">
-              {/* Avatar Section - Fixed Width on Desktop, Centered on Mobile */}
               <div className="flex-shrink-0 mx-auto md:mx-0">
                 <ProfileAvatar
                   profile={profile}
                 />
               </div>
 
-              {/* Main Content Area */}
               <div className="flex-grow space-y-8 w-full">
-                {/* Header & Stats */}
                 <div>
                    <ProfileHeader profile={profile} onProfileUpdate={setProfile} />
                    <div className="mt-6 flex flex-wrap gap-4">
-                      {/* <ProfileStats profile={profile} /> */}
                    </div>
                 </div>
 
-                {/* Divider */}
                 <div className="h-px bg-border/50 w-full" />
 
-                {/* Details & Preferences */}
                 <div className="space-y-8">
                    <ProfilePreferences preferences={profile.preferences} />
                    <div className="pt-4 text-xs text-muted-foreground text-center md:text-left">
@@ -107,6 +102,14 @@ export default function ProfilePage() {
             </div>
           </div>
           
+      {profile && (
+  <div className="fixed top-6 right-2 sm:hidden z-50">
+    <EditProfileFab
+          profile={profile}
+      onProfileUpdate={setProfile}
+    />
+  </div>
+)}
         </div>
       </div>
     </main>

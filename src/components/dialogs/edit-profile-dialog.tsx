@@ -9,6 +9,7 @@ import PhotoManager from "../photos/photo-manager";
 import { BasicInfoForm, BasicInfoProps } from "../profile/basic-info-form";
 import LocationPicker from "../location/location-picker";
 import { PreferencesFormSection } from "../profile/preferences-form-section";
+import { toast } from "sonner";
 
 interface ProfileEditFormProps {
   profile: UserProfile;
@@ -74,7 +75,48 @@ export default function ProfileEditForm({
     }));
   };
 
+  // Helper function to validate birthday age (18-80 years)
+  const validateBirthdayAge = (): boolean => {
+    if (!form.birthday) {
+      toast.error("Please enter your birthday");
+      return false;
+    }
+
+    const birthdayDate = new Date(form.birthday);
+    
+    // Check if the date is valid
+    if (isNaN(birthdayDate.getTime())) {
+      toast.error("Please enter a valid birthday");
+      return false;
+    }
+
+    const today = new Date();
+    const age = today.getFullYear() - birthdayDate.getFullYear();
+    const monthDiff = today.getMonth() - birthdayDate.getMonth();
+    const dayDiff = today.getDate() - birthdayDate.getDate();
+    
+    // Adjust age if birthday hasn't occurred yet this year
+    const actualAge = monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
+
+    if (actualAge < 18) {
+      toast.error("You must be at least 18 years old to use this app");
+      return false;
+    }
+    
+    if (actualAge > 80) {
+      toast.error("Age must be 80 years or younger");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSave = async () => {
+    // Validate birthday age before saving
+    if (!validateBirthdayAge()) {
+      return;
+    }
+
     if (!form.location.lat || !form.location.lng) {
       setError("Please provide your location");
       return;

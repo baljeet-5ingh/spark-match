@@ -1,12 +1,11 @@
+import Gradient from "@/components/gradients/main-gradient";
+import { BottomNav } from "@/components/navigation/bottom-nav";
+import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/context/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
-import { BottomNav } from "@/components/navigation/bottom-nav";
-import Gradient from "@/components/gradients/main-gradient";
-import { Toaster } from "@/components/ui/sonner";
-import Header from "@/components/header/header";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 const poppins = Poppins({
@@ -37,7 +36,6 @@ export default function RootLayout({
           >
             <Toaster position="top-center" richColors />
             <Gradient />
-            <Header />
             {children}
             <BottomNav />
           </ThemeProvider>

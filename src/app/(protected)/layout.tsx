@@ -1,7 +1,12 @@
+import Header from "@/components/header/header";
+
 export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <>
+  <Header />
+  {children}
+  </>;
 }

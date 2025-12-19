@@ -88,7 +88,6 @@ const fetchUsers = useCallback(
     ) {
       setUsers((prev) => {
         const filtered = prev.filter((u) => {
-          console.log("Filtering user:", u.id);
           if (!u.location) return false;
           const calcDistance = getDistanceKm(liveCoords, u.location);
           return calcDistance <= distanceKm;

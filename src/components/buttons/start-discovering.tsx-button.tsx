@@ -21,9 +21,8 @@ export function StartDiscovering() {
     >
       <ShineBorder
         shineColor={[
-          "rgba(255, 120, 90, 0.9)",
-          "rgba(255, 80, 120, 0.8)",
-          "rgba(255, 150, 60, 0.85)",
+          "rgba(255, 255, 255, 0.9)",
+          "rgba(255, 80, 120, 0.9)",
         ]}
       />
       <span className="relative z-10">Start Discovering</span>

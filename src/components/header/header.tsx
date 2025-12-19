@@ -12,7 +12,7 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
-import { LogIn } from "lucide-react";
+import { User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -102,7 +102,7 @@ export default function Header() {
           transition-none
         "
                   >
-                    <LogIn strokeWidth={0.75} className="h-5 w-5" />
+                    <User className="h-5 w-5" />
                   </button>
                 </DropdownMenuTrigger>
 
